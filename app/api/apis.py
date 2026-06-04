@@ -1,8 +1,8 @@
 from fastapi import APIRouter , HTTPException , Depends
-from app.schemas.design import UserResponse , RegisterUser
-from core.database import get_db
+from app.schemas.design import UserResponse , RegisterUser , Login
+from app.core.database import get_db
 from sqlalchemy.orm import Session 
-from app.crud.crudop import register
+from app.crud.crudop import register , readuser ,loginuser
 
 
 
@@ -12,5 +12,19 @@ router=APIRouter()
 def registeruser(post:RegisterUser , db:Session=Depends(get_db)):
     user=register(post , db)
     if user is None :
-        raise HTTPException(status_code=401 , detail="User Already Exists")
+        raise HTTPException(status_code=404 , detail="User Already Exists")
+    return user
+
+@router.get("/readuser{id}",response_model=UserResponse)
+def showuser(id:int , db:Session=Depends(get_db)):
+    user=readuser(id , db)
+    if user is None:
+        raise HTTPException(status_code=404 , detail="user do not exists")
+    return user
+@router.post("/login/")
+def userlogin(post:Login , db:Session=Depends(get_db)):
+    user=loginuser(post , db)
+
+    if user is None:
+        raise HTTPException(status_code=404 , detail="Invalid Username or Password")
     return user

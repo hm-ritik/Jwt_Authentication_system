@@ -12,4 +12,4 @@ def check():
     return{
         "Message":"Testing Apis are working"
     }
-Base.metadat.createall(bind=engine)
+Base.metadata.create_all(bind=engine)
