@@ -1,11 +1,21 @@
 from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta
+from sqlalchemy.orm import Session
+from app.core.database import get_db
 import os
 from dotenv import load_dotenv
 load_dotenv()
-SECRET_KEY=os.getenv("SECRET_KEY")
+from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends
+from app.models.user_table import User
 
+
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="login"
+)
+
+SECRET_KEY=os.getenv("SECRET_KEY")
 ALGORITHM="HS256"
 ACCESS_TOKEN_EXPIRY_MINUTES=30
 
@@ -33,3 +43,9 @@ def create_access_token(data:dict):
 
     encoded_token=jwt.encode(to_encode , SECRET_KEY , algorithm=ALGORITHM)
     return encoded_token
+
+def get_current_user(token:str=Depends(oauth2_scheme),db:Session=Depends(get_db)):
+    payload = jwt.decode( token, SECRET_KEY, algorithms=[ALGORITHM])
+    username = payload.get("sub")
+    user = db.query(User).filter(User.username == username).first()
+    return user 
