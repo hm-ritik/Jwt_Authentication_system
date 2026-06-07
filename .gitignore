@@ -2,6 +2,5 @@ __pycache__
 /__pycache__/
 __pycache__/
 .vscode
-.env
 env
 user.db
