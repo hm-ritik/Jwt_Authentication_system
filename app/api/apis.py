@@ -17,6 +17,7 @@ def registeruser(post:RegisterUser , db:Session=Depends(get_db)):
 
 
 
+
 @router.post("/login/")
 def userlogin(post:Login , db:Session=Depends(get_db)):
     user=loginuser(post , db)
@@ -27,6 +28,8 @@ def userlogin(post:Login , db:Session=Depends(get_db)):
 
 @router.get("/readuser/{id}",response_model=UserResponse)
 def showuser(id:int , db:Session=Depends(get_db),current_user=Depends(get_current_user)):
+    if current_user.id !=id and current_user.role!='Admin':
+        raise HTTPException(status_code=401, detail="Access Denied")
     user=readuser(id , db)
     if user is None:
         raise HTTPException(status_code=404 , detail="user do not exists")

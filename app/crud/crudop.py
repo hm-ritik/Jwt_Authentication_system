@@ -13,6 +13,7 @@ def register(post:RegisterUser , db:Session):
     new_user=User(
         username=post.username,
         email=post.email,
+        role=post.role,
         password=paswrd
     )
     db.add(new_user)
