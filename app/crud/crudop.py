@@ -1,4 +1,4 @@
-from app.schemas.design import RegisterUser , UserResponse , Login
+from app.schemas.design import RegisterUser , UserResponse , Login ,  Update
 from sqlalchemy.orm import Session
 from app.models.user_table import User
 from app.core.security import verify_password , hash_password , create_access_token
@@ -13,7 +13,7 @@ def register(post:RegisterUser , db:Session):
     new_user=User(
         username=post.username,
         email=post.email,
-        role=post.role,
+        role="user",
         password=paswrd
     )
     db.add(new_user)
@@ -38,8 +38,35 @@ def loginuser(data:Login , db: Session):
         userdata.password
     ):
      return None
-    token=create_access_token({"sub": userdata.username})
+    token = create_access_token({"sub": userdata.username})
     return token
+
+def showusers(db:Session):
+    users= db.query(User).all()
+    return users
+
+def removeuser(id:int , db:Session):
+    user=db.query(User).filter(User.id==id).first()
+    if not user:
+        return None
+    db.delete(user)
+    db.commit()
+    return user
+
+def updateinfo(id: int , post:Update ,db:Session):
+    user=db.query(User).filter(User.id==id).first()
+    if not user:
+        return None
+    user.username=post.username
+    user.email= post.email
+   
+    db.commit()
+    db.refresh(user)
+    return user
+    
+  
+
+
     
     
 

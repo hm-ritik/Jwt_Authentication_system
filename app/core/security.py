@@ -7,7 +7,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 from fastapi.security import OAuth2PasswordBearer
-from fastapi import Depends
+from fastapi import Depends , HTTPException 
 from app.models.user_table import User
 
 
@@ -49,3 +49,10 @@ def get_current_user(token:str=Depends(oauth2_scheme),db:Session=Depends(get_db)
     username = payload.get("sub")
     user = db.query(User).filter(User.username == username).first()
     return user 
+
+def require_admin(current_user=Depends(get_current_user)):
+    if current_user.role !='Admin':
+        raise HTTPException(status_code=403 , detail="Admin Access Required")
+    return current_user
+
+

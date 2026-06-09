@@ -4,7 +4,6 @@ from pydantic import BaseModel
 class RegisterUser(BaseModel):
     username:str
     email:str
-    role:str
     password:str
 
 class Login(BaseModel):
@@ -16,3 +15,14 @@ class UserResponse(BaseModel):
     username:str
     role:str
     email:str
+
+class Update(BaseModel): 
+    username:str
+    email:str      
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    model_config = {"from_attributes": True}    
+
+ 
